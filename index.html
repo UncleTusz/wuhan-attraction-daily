@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#3E8E5A">
+<title>武汉好玩景点日报 · 往期归档</title>
+<style>:root{--bg:#F5F8F2;--fg:#0F172A;--card:#fff;--muted-fg:#4B5563;--border:#DDE8D8;--primary:#3E8E5A;--shadow:0 1px 3px rgba(15,23,42,.06),0 4px 14px rgba(62,142,90,.10)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.hero{position:relative;height:30vh;min-height:200px;max-height:320px;overflow:hidden}
+.hero img{width:100%;height:100%;object-fit:cover}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.05) 30%,rgba(15,23,42,.62) 100%)}
+.hero .inner{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 16px}
+.hero h1{color:#fff;font-size:clamp(19px,4.5vw,25px);font-weight:700;letter-spacing:.5px;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.hero .sub{color:rgba(255,255,255,.92);font-size:12.5px;margin-top:4px;text-shadow:0 1px 6px rgba(0,0,0,.45)}
+.hero .sub b{color:#A9C9A4}
+.hero .stat{position:absolute;top:12px;right:14px;background:rgba(255,255,255,.93);border-radius:999px;padding:4px 11px;font-size:11px;font-weight:700;color:#14532D}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 40px}
+.day{display:block;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:14px;transition:transform .15s ease,box-shadow .15s ease}
+.day:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(15,23,42,.08),0 8px 22px rgba(62,142,90,.14)}
+.day-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.d-date{font-size:18px;font-weight:800;color:#14532D}
+.d-week{font-size:12px;color:var(--muted-fg);background:var(--bg);border-radius:999px;padding:2px 9px}
+.d-topic{font-size:12px;font-weight:700;color:#14532D;background:#E2EFDF;border-radius:999px;padding:2px 9px}
+.d-stats{margin-left:auto;font-size:12px;color:var(--muted-fg)}
+.d-stats b{color:var(--primary);font-size:14px}
+.trap-c{color:#B91C1C;font-style:normal;font-weight:700}
+.day-top{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.day-top .t{font-size:13.5px;font-weight:600;display:flex;gap:6px;align-items:baseline}
+.day-top .t .no{color:var(--primary);font-weight:800;font-size:12px;flex-shrink:0}
+.day-top .t .warn{color:#B91C1C;font-size:11px;font-weight:800;flex-shrink:0}
+.day-top .t .s{color:var(--muted-fg);font-weight:400;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.day-covers{display:flex;gap:8px;margin-top:11px}
+.day-covers img{width:86px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border);background:#EDF3EA}
+.d-go{display:inline-block;margin-top:11px;font-size:12.5px;font-weight:700;color:var(--primary)}
+footer{text-align:center;color:var(--muted-fg);font-size:11.5px;padding:6px 0 26px}</style>
+</head>
+<body>
+<div class="hero"><img src="assets/hero_map.jpg" alt="">
+<div class="veil"></div>
+<div class="inner">
+  <div><h1>武汉好玩景点日报 · 往期归档</h1>
+  <div class="sub">每天从小红书精选武汉好玩景点/打卡点一手笔记 ｜ 已存档 <b id="ndays">0</b> 期 · 永久可回翻</div></div>
+  <div class="stats"><span class="stat">📕 每期含地图页 · 高德坐标 · 必玩点/避坑点标注</span></div>
+</div></div>
+<div class="wrap">
+<!-- ---------- 期数卡片骨架（由 build_archive.py 自动生成，勿手改） ---------- -->
+<a class="day" id="d2026-09-09">
+  <div class="day-head"><span class="d-date">2026 / 09 / 09</span><span class="d-week">周三</span><span class="d-topic">📍 新打卡点</span>
+    <span class="d-stats"><b>5</b> 精选 · 12 候选 · <i class="trap-c">9 避坑</i></span></div>
+  <div class="day-top"></div>
+  <div class="day-covers"></div>
+  <span class="d-go">打开当期地图页 →</span>
+</a>
+<a class="day" id="d2026-09-08">
+  <div class="day-head"><span class="d-date">2026 / 09 / 08</span><span class="d-week">周二</span><span class="d-topic">🏛️ 室内好去处</span>
+    <span class="d-stats"><b>5</b> 精选 · 12 候选 · <i class="trap-c">10 避坑</i></span></div>
+  <div class="day-top"></div>
+  <div class="day-covers"></div>
+  <span class="d-go">打开当期地图页 →</span>
+</a>
+<a class="day" id="d2026-09-07">
+  <div class="day-head"><span class="d-date">2026 / 09 / 07</span><span class="d-week">周一</span><span class="d-topic">🎭 演出展览</span>
+    <span class="d-stats"><b>6</b> 精选 · 20 候选 · <i class="trap-c">16 避坑</i></span></div>
+  <div class="day-top"></div>
+  <div class="day-covers"></div>
+  <span class="d-go">打开当期地图页 →</span>
+</a>
+<a class="day" id="d2026-09-06">
+  <div class="day-head"><span class="d-date">2026 / 09 / 06</span><span class="d-week">周日</span><span class="d-topic">🎭 演出展览</span>
+    <span class="d-stats"><b>8</b> 精选 · 20 候选 · <i class="trap-c">16 避坑</i></span></div>
+  <div class="day-top"></div>
+  <div class="day-covers"></div>
+  <span class="d-go">打开当期地图页 →</span>
+</a>
+<a class="day" id="d2026-09-05">
+  <div class="day-head"><span class="d-date">2026 / 09 / 05</span><span class="d-week">周六</span><span class="d-topic">🏛️ 室内好去处</span>
+    <span class="d-stats"><b>5</b> 精选 · 10 候选 · <i class="trap-c">12 避坑</i></span></div>
+  <div class="day-top"></div>
+  <div class="day-covers"></div>
+  <span class="d-go">打开当期地图页 →</span>
+</a>
+<a class="day" id="d2026-09-04">
+  <div class="day-head"><span class="d-date">2026 / 09 / 04</span><span class="d-week">周五</span><span class="d-topic">🧭 小众秘境</span>
+    <span class="d-stats"><b>5</b> 精选 · 10 候选 · <i class="trap-c">11 避坑</i></span></div>
+  <div class="day-top"></div>
+  <div class="day-covers"></div>
+  <span class="d-go">打开当期地图页 →</span>
+</a>
+</div>
+<footer>武汉好玩景点日报 · 数据来源：小红书公开笔记 ｜ AI 整理生成 · 仅供参考</footer>
+<script>
+/* ---------- 数据：各期汇总（由 build_archive.py 自动注入，勿手改） ---------- */
+const ARCHIVE=[
+ {
+  "day": "2026-09-09",
+  "week": "周三",
+  "topic": "📍 新打卡点",
+  "picks": 5,
+  "cands": 12,
+  "traps": 9,
+  "top": [
+   {
+    "t": "武汉花30r可以待一下午的地方（1/100）",
+    "s": "东湖边一家 30 元就能待一下午的湖畔小院咖啡，晒太阳、看湖水、喝咖啡，松弛感像误入",
+    "trap": true
+   },
+   {
+    "t": "五一来武汉，直接复制这条citywalk路线！！",
+    "s": "一条汉口一日游私藏路线：武汉天地→黎黄陂路→青岛路→咸安坊→扬子街→汉口江滩→江汉关",
+    "trap": true
+   },
+   {
+    "t": "武汉绝美新地标🌟拍照圣地TOP榜来啦～📸",
+    "s": "武汉新晋拍照地标 TOP 榜：麓客岛小新西兰、通城印巷复古街巷、后官湖麦田星空农场、",
+    "trap": true
+   }
+  ],
+  "covers": [
+   "assets/covers/2026-09-09_25ff2f7378_s.jpg",
+   "assets/covers/2026-09-09_dea02f23b2_s.jpg",
+   "assets/covers/2026-09-09_44efd68dc4_s.jpg"
+  ],
+  "page": "地图-2026-09-09.html"
+ },
+ {
+  "day": "2026-09-08",
+  "week": "周二",
+  "topic": "🏛️ 室内好去处",
+  "picks": 5,
+  "cands": 12,
+  "traps": 10,
+  "top": [
+   {
+    "t": "武汉适合一个人无聊闲逛的地方！（71/1000）",
+    "s": "武昌老城区 i 人闲逛路线：从考拉食堂往上走三道街，一路薄荷绿栏杆和漫画涂鸦，还能偶",
+    "trap": true
+   },
+   {
+    "t": "情侣周末干什么｜高温室内约会指南（4/100）",
+    "s": "35℃+ 高温天室内约会指南，六个方向各有适用场景：海洋馆看固定场次表演、博物馆安静",
+    "trap": true
+   },
+   {
+    "t": "武汉5000㎡室内运动园🎾约会4H！（附攻略）",
+    "s": "武昌万象城 PARTYDAY 运动超乐 5000㎡ 两层运动空间：2F 碰碰车/保龄",
+    "trap": true
+   }
+  ],
+  "covers": [
+   "assets/covers/2026-09-08_63d889cd06_s.jpg",
+   "assets/covers/2026-09-08_a8c4994410_s.jpg",
+   "assets/covers/2026-09-08_df37aa61c3_s.jpg"
+  ],
+  "page": "地图-2026-09-08.html"
+ },
+ {
+  "day": "2026-09-07",
+  "week": "周一",
+  "topic": "🎭 演出展览",
+  "picks": 6,
+  "cands": 20,
+  "traps": 16,
+  "top": [
+   {
+    "t": "断眉演唱会武汉站获批10月28日✅附歌单",
+    "s": "Charlie Puth 断眉《Whatever's Clever!》世巡武汉站正式",
+    "trap": true
+   },
+   {
+    "t": "教师证的正确打开方式",
+    "s": "教师节福利实测：9 月 5-13 日凭教师证+身份证免费入园，随行家属 169 元/",
+    "trap": true
+   },
+   {
+    "t": "武汉演唱会live资讯（2026.9）",
+    "s": "9-11 月武汉演出艺人清单式汇总：9 月有 JONY J、陈婧霏、布瑞吉、声音玩具",
+    "trap": true
+   }
+  ],
+  "covers": [
+   "assets/covers/2026-09-07_92842036d6_s.jpg",
+   "assets/covers/2026-09-07_bcdfb82d2c_s.jpg",
+   "assets/covers/6a95757f00_s.jpg"
+  ],
+  "page": "地图-2026-09-07.html"
+ },
+ {
+  "day": "2026-09-06",
+  "week": "周日",
+  "topic": "🎭 演出展览",
+  "picks": 8,
+  "cands": 20,
+  "traps": 16,
+  "top": [
+   {
+    "t": "【避雷】江汉路步行街大笑喜剧",
+    "s": "作者带朋友体验江汉路大笑喜剧后的避雷长文：90 分钟四个演员，认为段子以低俗梗为主、",
+    "trap": true
+   },
+   {
+    "t": "脱口秀不止有欢笑｜是成年人的情绪留白",
+    "s": "单立人喜剧演出季武汉站中南剧场场 repo：六位演员六种视角，不堆烂梗、安静共情路线",
+    "trap": true
+   },
+   {
+    "t": "单立人武汉季（线下演出的魅力还在继续）",
+    "s": "单立人武汉演出季全卡司介绍：主持人赖铭佳、孙郁（父女关系）、孙嘻（职场法务梗）、安全",
+    "trap": true
+   }
+  ],
+  "covers": [
+   "assets/covers/2026-09-06_18b5f65625_s.jpg",
+   "assets/covers/2026-09-06_8b08646499_s.jpg",
+   "assets/covers/2026-09-06_53b4135657_s.jpg"
+  ],
+  "page": "地图-2026-09-06.html"
+ },
+ {
+  "day": "2026-09-05",
+  "week": "周六",
+  "topic": "🏛️ 室内好去处",
+  "picks": 5,
+  "cands": 10,
+  "traps": 12,
+  "top": [
+   {
+    "t": "武汉dating必做的50件小事…",
+    "s": "超高赞热帖，整理『武汉 dating 必做的 50 件小事』，覆盖约会/拍照/逛街/",
+    "trap": true
+   },
+   {
+    "t": "毋庸置疑看展天花板！武汉8月展览",
+    "s": "8 月武汉展览合辑，作者称『看展天花板』，覆盖市区多个美术馆/展馆，标签含『免费看展",
+    "trap": true
+   },
+   {
+    "t": "武大plog｜在武汉找到比剧本杀更好玩的了",
+    "s": "沉浸式戏剧《宋美龄的耳环丢了》体验帖，场地位于汉口保元里历史街区（近江汉路/南京路一",
+    "trap": true
+   }
+  ],
+  "covers": [
+   "assets/covers/2026-09-05_8e01a4388d_s.jpg",
+   "assets/covers/2026-09-05_2b62d8a894_s.jpg",
+   "assets/covers/2026-09-05_ce97daea54_s.jpg"
+  ],
+  "page": "地图-2026-09-05.html"
+ },
+ {
+  "day": "2026-09-04",
+  "week": "周五",
+  "topic": "🧭 小众秘境",
+  "picks": 5,
+  "cands": 10,
+  "traps": 11,
+  "top": [
+   {
+    "t": "这可能是最夯的大兴安岭小众玩法（北线）",
+    "s": "作者连续多年带队大兴安岭赏秋的北线深度玩法：放弃人多的观景点、保留独一无二景色。路线",
+    "trap": true
+   },
+   {
+    "t": "贵州10个小众景点，避开人潮不踩坑！",
+    "s": "贵州 10 个被遗忘的神仙角落，人少景美几乎全免费：镇山村、归兰山、隆里古城、高荡村",
+    "trap": true
+   },
+   {
+    "t": "📍武汉｜适合Citywalk的五十个地方（32/50",
+    "s": "长江与汉江交汇处，武汉『中国第一角』、城市丹田。天气晴好时能看到清浊分明的『鸳鸯锅』",
+    "trap": true
+   }
+  ],
+  "covers": [
+   "assets/covers/2026-09-04_6c217ad358_s.jpg",
+   "assets/covers/2026-09-04_a3123a132b_s.jpg",
+   "assets/covers/2026-09-04_74354d84fe_s.jpg"
+  ],
+  "page": "地图-2026-09-04.html"
+ }
+];
+const $=s=>document.querySelector(s);
+$("#ndays").textContent=ARCHIVE.length;
+for(const a of ARCHIVE){
+  const card=document.getElementById("d"+a.day);
+  if(!card) continue;
+  card.href=a.page;
+  const top=card.querySelector(".day-top");
+  a.top.forEach((t,i)=>{
+    const el=document.createElement("div");
+    el.className="t";
+    el.innerHTML='<span class="no">'+(i+1)+'.</span>'+
+      (t.trap?'<span class="warn">⚠️避坑</span>':'')+
+      '<span>'+t.t+'</span><span class="s">'+t.s+'…</span>';
+    top.appendChild(el);
+  });
+  const cov=card.querySelector(".day-covers");
+  (a.covers||[]).forEach(c=>{
+    const img=document.createElement("img");
+    img.src=c; img.loading="lazy"; img.alt="";
+    cov.appendChild(img);
+  });
+}
+</script>
+</body>
+</html>

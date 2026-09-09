@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#3E8E5A">
+<title>武汉好玩景点日报 · 2026-09-06</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --bg:#F5F8F2; --fg:#0F172A; --card:#FFFFFF; --muted:#EDF3EA; --muted-fg:#4B5563;
+  --border:#DDE8D8; --primary:#3E8E5A; --accent:#2563EB; --ring:#3E8E5A;
+  --shadow:0 1px 3px rgba(15,23,42,.06),0 4px 14px rgba(62,142,90,.10);
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px;border-radius:6px}
+img{display:block}
+
+/* ---------- hero：顶部 1/3 视口 ---------- */
+.hero{position:relative;height:33vh;min-height:230px;max-height:400px;overflow:hidden}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:center 42%}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.02) 35%,rgba(15,23,42,.6) 100%)}
+.hero .inner{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 16px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hero h1{color:#fff;font-size:clamp(19px,4.5vw,24px);font-weight:700;letter-spacing:.5px;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.hero .sub{color:rgba(255,255,255,.9);font-size:clamp(11px,2.8vw,12.5px);margin-top:3px;text-shadow:0 1px 6px rgba(0,0,0,.45)}
+.stats{display:flex;gap:7px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.93);backdrop-filter:blur(4px);border-radius:999px;padding:4px 11px;font-size:11.5px;font-weight:700;color:#14532D;display:flex;align-items:center;gap:5px}
+.stat svg{width:12px;height:12px;stroke:var(--primary)}
+.hero .tag-ai{position:absolute;top:10px;right:12px;background:rgba(15,23,42,.5);color:#fff;font-size:10.5px;padding:3px 9px;border-radius:999px;backdrop-filter:blur(3px)}
+
+/* ---------- sticky 筛选条 ---------- */
+.toolbar{position:sticky;top:0;z-index:500;background:rgba(245,248,242,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;border:1px solid var(--border);background:var(--card);color:var(--muted-fg);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s ease;display:flex;align-items:center;gap:6px;min-height:36px}
+.chip svg{width:14px;height:14px}
+.chip:hover{border-color:var(--primary);color:var(--primary)}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.origin-tip{flex-shrink:0;font-size:11.5px;color:var(--muted-fg)}
+.origin-tip b{color:var(--accent)}
+@media (max-width:640px){.origin-tip{display:none}}
+
+/* ---------- 卡片流 ---------- */
+.feed{padding:18px 18px 6px;max-width:1200px;margin:0 auto}
+.feed-sec{font-size:15px;font-weight:700;margin:6px 0 14px;display:flex;align-items:center;gap:7px}
+.feed-sec svg{width:16px;height:16px;stroke:var(--primary)}
+.masonry{column-count:1;column-gap:16px}
+@media (min-width:680px){.masonry{column-count:2}}
+@media (min-width:1080px){.masonry{column-count:3}}
+.card{break-inside:avoid;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;box-shadow:var(--shadow);animation:fadeUp .45s ease both}
+.card:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(62,142,90,.16);border-color:#A9C9A4}
+.card.hl{border-color:var(--primary);box-shadow:0 0 0 2px rgba(62,142,90,.35),0 6px 24px rgba(62,142,90,.16)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.card{animation:none}.card:hover{transform:none}}
+
+.cover{position:relative;aspect-ratio:4/3;background:var(--muted);overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.card:hover .cover img{transform:scale(1.04)}
+.cover .flag{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.94);color:#14532D;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;display:flex;align-items:center;gap:5px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.cover .flag svg{width:12px;height:12px}
+.cover .km-f{position:absolute;bottom:10px;right:10px;background:rgba(15,23,42,.62);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;backdrop-filter:blur(3px);transition:background .2s}
+.cover .km-f.warn{background:rgba(180,83,9,.92);animation:shake .45s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.cover .gal{position:absolute;bottom:10px;left:10px;background:rgba(37,99,235,.9);color:#fff;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;backdrop-filter:blur(3px)}
+
+.body{padding:13px 15px 12px}
+.title{font-size:15.5px;font-weight:700;line-height:1.45;margin-bottom:7px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.mtag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--muted);color:var(--muted-fg)}
+.mtag.cat{color:#14532D;background:#E2EFDF}
+.mtag.stat{color:#166534;background:#ECFDF3}
+.sum{font-size:12.5px;color:var(--muted-fg);line-height:1.75;margin-bottom:9px}
+.kv{font-size:12px;line-height:1.85;margin-bottom:8px}
+.kv .k{font-weight:700;color:#15803D}
+.kv .k.bad{color:#B91C1C}
+.kv li{list-style:none;padding-left:15px;position:relative}
+.kv li:before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:#15803D}
+.kv.bad li:before{background:#DC2626}
+.links{display:flex;gap:8px;flex-wrap:wrap;border-top:1px dashed var(--border);padding-top:10px;align-items:center;justify-content:space-between}
+.mine{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px}
+.mine.low{background:#ECFDF3;color:#15803D}
+.mine.mid{background:#FEF6E0;color:#B45309}
+.mine.high{background:#FEF0EF;color:#B91C1C}
+.mine.tbd{background:#F1F5F9;color:#64748B}
+.lnk{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:6px 11px;border-radius:9px;border:1px solid var(--border);color:var(--muted-fg);text-decoration:none;transition:all .18s;cursor:pointer}
+.lnk:hover{color:var(--primary);border-color:var(--primary)}
+.lnk svg{width:13px;height:13px;stroke:currentColor}
+.grp{display:flex;gap:8px;align-items:center}
+.entry{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:#14532D;background:#DCFCE7;border:1px solid #BBF7D0;border-radius:999px;padding:4px 11px;margin-right:6px}
+
+/* ---------- 底部交互地图 ---------- */
+.mapsec{max-width:1200px;margin:8px auto 0;padding:0 18px 40px}
+.map-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.map-title{padding:13px 16px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px}
+.map-title svg{width:15px;height:15px;stroke:var(--primary)}
+#map{height:56vh;min-height:360px}
+.map-note{padding:10px 14px;font-size:11.5px;color:var(--muted-fg);border-top:1px solid var(--border);line-height:1.7;display:flex;gap:7px}
+.map-note svg{width:14px;height:14px;stroke:var(--accent);flex-shrink:0;margin-top:1px}
+
+footer{padding:0 18px 34px;max-width:1200px;margin:0 auto;font-size:11px;color:#78716C;line-height:1.9}
+footer a{color:var(--primary);text-decoration:none}
+
+/* ---------- leaflet ---------- */
+.pin{background:none;border:none}
+.pin .inner{width:30px;height:30px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(15,23,42,.3);border:2px solid #fff}
+.pin .inner svg{width:14px;height:14px;stroke:#fff;transform:rotate(45deg)}
+.pin.origin .inner{border-radius:50%;background:var(--accent)}
+.pin.origin .inner svg{width:12px;height:12px}
+.pin.far .inner{background:#A9C9A4}
+.pin.far .inner svg{stroke:#14532D}
+.leaflet-popup-content-wrapper{border-radius:12px}
+.leaflet-popup-content{margin:12px 14px;font-family:inherit}
+.pop{font-size:12px;line-height:1.7;min-width:200px}
+.pop b{font-size:13.5px;display:block;margin-bottom:4px}
+.pop .row{color:#57534E;margin-bottom:2px}
+.pop .d{color:var(--primary);font-weight:700}
+.pop .sub{color:#14532D;font-size:11.5px;margin-top:3px}
+</style>
+</head>
+<body>
+
+<!-- ① 顶部 1/3：柔和绿手绘底图 -->
+<header class="hero">
+  <img src="assets/hero_map.jpg" alt="武汉好玩去处手绘插画（AI 示意底图）">
+  <div class="veil"></div>
+  <span class="tag-ai">AI 手绘示意底图</span>
+  <div class="inner">
+    <div>
+      <h1>武汉好玩景点日报</h1>
+      <div class="sub">2026-09-06 ｜ 🎭 今日主题：演出展览 ｜ 小红书一手笔记 · 每天 09:15 自动更新</div>
+    </div>
+    <div class="stats">
+      <span class="stat"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>8 篇精选</span>
+      <span class="stat"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15l4-5 3 3 5-7"/></svg>20 篇候选</span>
+      <span class="stat"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>16 处避坑</span>
+    </div>
+  </div>
+</header>
+
+<!-- ② 筛选条 -->
+<div class="toolbar">
+  <div class="chips" id="chips" role="tablist" aria-label="按品类筛选"></div>
+  <div class="origin-tip">出发地：<b>江汉路（示例）</b></div>
+</div>
+
+<!-- ③ 图文卡片流 -->
+<main class="feed">
+  <div class="feed-sec"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>今天值得看的 8 篇</div>
+  <div class="masonry" id="cards"></div>
+</main>
+
+<!-- ④ 底部：落点与距离 -->
+<section class="mapsec">
+  <div class="map-card">
+    <div class="map-title"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>落点与距离 · 高德坐标</div>
+    <div id="map"></div>
+    <div class="map-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span>坐标来自<b>高德地图 POI 检索</b>：原文写了明确地点的落<b>店铺级</b>，只写位置没写地点/未被高德收录的落<b>商圈级</b>；距离为自示例出发地<b>江汉路</b>的直线距离。**全国小众词**（长假使用）日报的出发地参考江汉路，**异地笔记距离仅作长途量级参考**，不做日常决策距离；卡片以"异地 · ≈xxx km"标注，地图上对应 pin 为浅绿色。</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  数据来源：小红书公开笔记（标题与封面均为原文原图，未做改写）。避坑判断来自原作者评价，非平台打分。<br>
+  日报由本地脚本每日 09:15 自动采集、筛选、生成；笔记版权归原作者所有，点击卡片按钮可跳转原文。
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ---------- 品类（6 类：室内/城市打卡/近郊户外/小众秘境/综合合集/其他） ---------- */
+const CATS={
+  indoor:{n:"室内场馆",  c:"#0E7490",icon:"M4 3h16v18H4zM4 8h16M9 21v-6h6v6"},
+  urban:{n:"城市打卡",   c:"#D97706",icon:"M3 11h18l-9-8-9 8Zm2 2v6h4v-4h4v4h4v-6"},
+  outskirt:{n:"近郊户外",c:"#15803D",icon:"M4 17h16M6 17a6 6 0 0 1 12 0M12 3v4M4 21h16"},
+  secret:{n:"小众秘境",  c:"#7C3AED",icon:"M4 20h16M6 20V9l6-5 6 5v11M10 20v-6h4v6"},
+  combo:{n:"综合合集",   c:"#DB2777",icon:"M4 6h7v7H4zM13 6h7v7h-7zM4 15h7v3H4zM13 15h7v3h-7z"},
+  show:{n:"演出展览",    c:"#BE123C",icon:"M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"},
+  other:{n:"其他",       c:"#64748B",icon:"M12 3v4M12 17v4M3 12h4M17 12h4"}
+};
+const ORIGIN={n:"江汉路（示例出发地）",lat:30.5802,lng:114.2862};
+
+/* ---------- 数据：5 篇入选笔记（由 build_page.py 自动注入，勿手改） ---------- */
+const NOTES=[
+ {
+  "cat": "show",
+  "title": "【避雷】江汉路步行街大笑喜剧",
+  "date": "2026-01-24",
+  "likes": 458,
+  "collects": 38,
+  "comments": 94,
+  "imgs": 4,
+  "gallery": false,
+  "cover": "assets/covers/2026-09-06_18b5f65625_s.jpg",
+  "url": "https://www.xiaohongshu.com/explore/6974d4e9000000000a02833a?xsec_token=ABZrbzBH67RS9E687gAuDvVVSM8lYv3JJ6Juko0CpLF4A=&xsec_source=web_search",
+  "sub": "江汉路步行街 大笑喜剧驻场（避雷参考帖）",
+  "nationwide_note": false,
+  "sum": "作者带朋友体验江汉路大笑喜剧后的避雷长文：90 分钟四个演员，认为段子以低俗梗为主、互动令人不适、密闭空间观感差。注意这是个人repo向避雷，评价主观，但赞藏高（458赞）参考性强，去之前先有个心理预期。",
+  "must": [
+   "高互动避雷帖（458 赞），去江汉路看演出前先避坑",
+   "同区域可对照其他厂牌（单立人等）做选择"
+  ],
+  "trap": [
+   "作者认为笑点低俗、互动尴尬，主观体验差",
+   "密闭不透气的场地空间，久坐头晕",
+   "若只是好奇建议先买最便宜票试水"
+  ],
+  "mine": [
+   "tbd",
+   "避雷参考·评价主观"
+  ],
+  "spots": [
+   {
+    "n": "江汉路步行街",
+    "lat": 30.58364,
+    "lng": 114.288045,
+    "q": "江汉路步行街",
+    "tip": "武汉江汉区江汉路步行街；大笑喜剧驻场场地所在",
+    "far": false
+   }
+  ],
+  "entry": ""
+ },
+ {
+  "cat": "show",
+  "title": "脱口秀不止有欢笑｜是成年人的情绪留白",
+  "date": "2026-09-06",
+  "likes": 9,
+  "collects": 0,
+  "comments": 0,
+  "imgs": 12,
+  "gallery": false,
+  "cover": "assets/covers/2026-09-06_8b08646499_s.jpg",
+  "url": "https://www.xiaohongshu.com/explore/6a9d09eb00000000260303a6?xsec_token=ABXNUjBRBTwYgf6QyRGUS5Qev1TXCyihnEWO-gui8RdZ8=&xsec_source=web_search",
+  "sub": "中南剧场（武汉人艺）单立人拼盘 repo",
+  "nationwide_note": false,
+  "sum": "单立人喜剧演出季武汉站中南剧场场 repo：六位演员六种视角，不堆烂梗、安静共情路线。孙郁讲中国式父爱、李酌妍讲与原生家庭和解、孙嘻的『痛就是你正在成长』。演出季 9 月多场次进行中，适合想要『笑着笑着被戳中』的观众。",
+  "must": [
+   "六位演员拼盘：孙郁/李酌妍/孙嘻/海波/安全出口(漫才)/山河",
+   "风格偏共情向，不刻意炸场",
+   "中南剧场环境舒服，散场有汽水/周边/纪念票根福利"
+  ],
+  "trap": [
+   "地铁出来需步行一段才到剧场",
+   "repo 场次已演完，需另购演出季后续场次"
+  ],
+  "mine": [
+   "high",
+   "单立人演出季·9月多场"
+  ],
+  "spots": [
+   {
+    "n": "中南剧场",
+    "lat": 30.596527,
+    "lng": 114.29858,
+    "q": "中南剧场",
+    "tip": "武汉江岸区中南剧场（武汉人艺）；单立人喜剧演出季武汉站场地",
+    "far": false
+   }
+  ],
+  "entry": ""
+ },
+ {
+  "cat": "show",
+  "title": "单立人武汉季（线下演出的魅力还在继续）",
+  "date": "2026-09-06",
+  "likes": 4,
+  "collects": 0,
+  "comments": 0,
+  "imgs": 9,
+  "gallery": false,
+  "cover": "assets/covers/2026-09-06_53b4135657_s.jpg",
+  "url": "https://www.xiaohongshu.com/explore/6a9ca947000000002b000f2e?xsec_token=ABWUBjHlNK3P6OlIETSEAJGGL2aPqAL1B-nV-FP-mTrh4=&xsec_source=web_search",
+  "sub": "中南剧场 单立人武汉演出季（卡司详细介绍帖）",
+  "nationwide_note": false,
+  "sum": "单立人武汉演出季全卡司介绍：主持人赖铭佳、孙郁（父女关系）、孙嘻（职场法务梗）、安全出口（漫才双人）、海波（白发观察式吐槽）、李酌妍（女性视角）、山河（生活化叙事）。两个多小时笑声几乎不断，线下脱口秀『同频共振』的现场感。",
+  "must": [
+   "全卡司一览，可按口味挑场次",
+   "安全出口漫才双人：一捧一逗、荒诞反转、肢体加分",
+   "演出季 9 月持续，多场次可选"
+  ],
+  "trap": [
+   "线下两小时+，提前安排好返程",
+   "repo 提及散场时间较晚"
+  ],
+  "mine": [
+   "high",
+   "演出季进行中·多场次"
+  ],
+  "spots": [
+   {
+    "n": "中南剧场",
+    "lat": 30.596527,
+    "lng": 114.29858,
+    "q": "中南剧场",
+    "tip": "武汉江岸区中南剧场（武汉人艺）；单立人喜剧演出季武汉站场地",
+    "far": false
+   }
+  ],
+  "entry": ""
+ },
+ {
+  "cat": "show",
+  "title": "repo｜武汉单立人喜剧演出🔥笑到打鸣！",
+  "date": "2026-09-06",
+  "likes": 2,
+  "collects": 0,
+  "comments": 0,
+  "imgs": 9,
+  "gallery": false,
+  "cover": "assets/covers/2026-09-06_4f64319c67_s.jpg",
+  "url": "https://www.xiaohongshu.com/explore/6a9d1e97000000002601e304?xsec_token=ABXNUjBRBTwYgf6QyRGUS5QdBJRHKzyGdhXwM3ErTcdtI=&xsec_source=web_search",
+  "sub": "中南剧场 单立人拼盘 repo（含观演须知）",
+  "nationwide_note": false,
+  "sum": "单立人武汉站 repo：全员段子质量在线、笑点密集；开场互动最多，散场有汽水+周边+纪念票根福利。明确观演规则：禁止拍照录像（现场有专职摄像，进群领官方照片）。演出时长约 1xx 分钟。",
+  "must": [
+   "散场福利：汽水/周边/复古纪念票根",
+   "漫才组合『安全出口』线下效果碾压线上",
+   "复古纪念票根有收藏价值"
+  ],
+  "trap": [
+   "禁止拍照录像，私自录拍影响后续演出",
+   "开场会被cue互动，社恐请坐后排"
+  ],
+  "mine": [
+   "high",
+   "观演须知·福利多"
+  ],
+  "spots": [
+   {
+    "n": "中南剧场",
+    "lat": 30.596527,
+    "lng": 114.29858,
+    "q": "中南剧场",
+    "tip": "武汉江岸区中南剧场（武汉人艺）；单立人喜剧演出季武汉站场地",
+    "far": false
+   }
+  ],
+  "entry": ""
+ },
+ {
+  "cat": "show",
+  "title": "笑是生活的解药，又被这个脱口秀轻轻接住",
+  "date": "2026-09-06",
+  "likes": 1,
+  "collects": 0,
+  "comments": 0,
+  "imgs": 12,
+  "gallery": false,
+  "cover": "assets/covers/2026-09-06_f4012281fd_s.jpg",
+  "url": "https://www.xiaohongshu.com/explore/6a9d6a86000000002900c7f9?xsec_token=ABXNUjBRBTwYgf6QyRGUS5QV-BL15xOAo7fA3kYO5aDmw=&xsec_source=web_search",
+  "sub": "中南剧场 单立人 9/5 场 repo",
+  "nationwide_note": false,
+  "sum": "单立人演出季 9/5 场深度 repo：一口气 6 位演员+主持人赖铭佳，拼盘诚意足、节奏快无拖沓。分段点评：孙郁陪女儿追星段子、孙嘻法务熬成接班人、海波白发梗、安全出口漫才唱歌耍帅样样来。涉及微透预警，适合选场前参考。",
+  "must": [
+   "六位演员分段点评，选场参考价值高",
+   "主持人赖铭佳控场热络",
+   "节奏快无拖沓，笑点密集"
+  ],
+  "trap": [
+   "repo 含剧透（作者已预警）",
+   "单场拼盘非专场，想看单人专场需另行购票"
+  ],
+  "mine": [
+   "mid",
+   "repo·选场参考"
+  ],
+  "spots": [
+   {
+    "n": "中南剧场",
+    "lat": 30.596527,
+    "lng": 114.29858,
+    "q": "中南剧场",
+    "tip": "武汉江岸区中南剧场（武汉人艺）；单立人喜剧演出季武汉站场地",
+    "far": false
+   }
+  ],
+  "entry": ""
+ },
+ {
+  "cat": "show",
+  "title": "单立人喜剧武汉站|中南剧场爆笑解压夜😂",
+  "date": "2026-09-06",
+  "likes": 3,
+  "collects": 1,
+  "comments": 1,
+  "imgs": 10,
+  "gallery": false,
+  "cover": "assets/covers/2026-09-06_72367e8676_s.jpg",
+  "url": "https://www.xiaohongshu.com/explore/6a9d0b4c00000000280379e1?xsec_token=ABXNUjBRBTwYgf6QyRGUS5QTJs2LMDsA8ZzBA_8yerzAE=&xsec_source=web_search",
+  "sub": "中南人艺剧场 单立人演出季 repo",
+  "nationwide_note": false,
+  "sum": "周末赴单立人演出季武汉站：复古纪念票有仪式感，剧场环境舒服、氛围拉满。海波沉稳松弛、山河故事感强、李酌妍女性视角犀利，风格各异全程笑声不断。周末晚上解压首选。",
+  "must": [
+   "复古纪念票可收藏",
+   "剧场环境舒服、观演氛围好",
+   "周末晚场解压首选"
+  ],
+  "trap": [
+   "热门场次周末票紧俏，建议提前购票"
+  ],
+  "mine": [
+   "high",
+   "周末晚场·解压"
+  ],
+  "spots": [
+   {
+    "n": "中南剧场",
+    "lat": 30.596527,
+    "lng": 114.29858,
+    "q": "中南剧场",
+    "tip": "武汉江岸区中南剧场（武汉人艺）；单立人喜剧演出季武汉站场地",
+    "far": false
+   }
+  ],
+  "entry": ""
+ },
+ {
+  "cat": "show",
+  "title": "终于在武汉蹲到这款爆火的魔术脱口秀🥳",
+  "date": "2026-09-06",
+  "likes": 0,
+  "collects": 0,
+  "comments": 0,
+  "imgs": 12,
+  "gallery": false,
+  "cover": "assets/covers/2026-09-06_f51e85edd4_s.jpg",
+  "url": "https://www.xiaohongshu.com/explore/6a9d3c02000000002b0249b4?xsec_token=ABXNUjBRBTwYgf6QyRGUS5Qb4N2Xmg2J6IhW7axtAsfEQ=&xsec_source=web_search",
+  "sub": "武昌 武商梦时代 WS梦乐园 魔术脱口秀（每周五驻场）",
+  "nationwide_note": false,
+  "sum": "WS梦乐园爆火魔术脱口秀：段子+近景魔术结合，进场每人有专属身份牌，全程剧情联动。188 双人票，每周五常驻。现场互动多，号称『大型吃瓜现场』，适合约会/脱单人群。",
+  "must": [
+   "近景魔术+脱口秀双体验",
+   "每人专属身份牌，剧情联动沉浸感强",
+   "188 双人票性价比高，每周五都有"
+  ],
+  "trap": [
+   "互动环节多，社恐注意",
+   "驻场演出，遇节假日排期以官方为准"
+  ],
+  "mine": [
+   "mid",
+   "每周五·约会向"
+  ],
+  "spots": [
+   {
+    "n": "WS梦乐园（武商梦时代）",
+    "lat": 30.529143,
+    "lng": 114.340319,
+    "q": "WS梦乐园",
+    "tip": "武汉武昌区武商梦时代 WS梦乐园；魔术脱口秀驻场",
+    "far": false
+   }
+  ],
+  "entry": "每周五 · ¥188/双人"
+ },
+ {
+  "cat": "show",
+  "title": "20260809 | 新鲜出炉的武汉演出合集❗",
+  "date": "2026-08-09",
+  "likes": 29,
+  "collects": 9,
+  "comments": 3,
+  "imgs": 4,
+  "gallery": true,
+  "cover": "assets/covers/2026-09-06_e57adbd571_s.jpg",
+  "url": "https://www.xiaohongshu.com/explore/6a783d26000000002500f166?xsec_token=ABWx9rhPDcx1u0go9hWEenGZaIAR1SAiLmk7ayBG7jKCw=&xsec_source=web_search",
+  "sub": "武汉 9-10 月演出合集：刘仁铖/步惊云/井胧/水木年华 等巡演",
+  "nationwide_note": false,
+  "sum": "武汉近期演出合集（8/9 发布）：覆盖脱口秀、演唱会、喜剧，含刘仁铖、步惊云、井胧、王翊恩、唐香玉、邱瑞、水木年华等巡演。日常剧场脱口秀与未开票场次未列入。具体场次/时间/票价写在图中，需点原文核对，部分早期场次可能已过期。",
+  "must": [
+   "刘仁铖、步惊云、井胧、水木年华等武汉巡演信息集中",
+   "脱口秀+演唱会+喜剧多品类汇总"
+  ],
+  "trap": [
+   "具体场次在图中，需点原文看图（gallery 型）",
+   "8/9 发布，早期场次可能已售罄或过期，购票前逐一核对"
+  ],
+  "mine": [
+   "mid",
+   "巡演合集·图集"
+  ],
+  "spots": [],
+  "entry": ""
+ }
+];
+
+/* ---------- 工具 ---------- */
+const ICON=(d)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+const DPI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>`;
+const HEART=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>`;
+const CMT=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8Z"/></svg>`;
+const IMGI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`;
+function hav(a,b,c,d){const R=6371,r=x=>x*Math.PI/180,dl=r(c-a),dg=r(d-b),h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+NOTES.forEach(n=>n.spots.forEach(s=>{s.km=hav(ORIGIN.lat,ORIGIN.lng,s.lat,s.lng);s.far=!!s.far}));
+NOTES.forEach(n=>n.km=n.spots.length?Math.min(...n.spots.map(s=>s.km)):null);
+
+/* ---------- 地图分档 ---------- */
+function kmBucket(km, far){
+  if(km===null||km===undefined) return {label:'坐标待核实', cls:''};
+  if(far||km>400) return {label:`异地 · ≈${km.toFixed(0)} km`, cls:'far'};
+  if(km>80)  return {label:`武汉周边 ≈${km.toFixed(0)} km`, cls:''};
+  return {label:`≈${km.toFixed(1)} km`, cls:''};
+}
+
+/* ---------- 底部地图 ---------- */
+const map=L.map('map',{zoomControl:true,attributionControl:false}).setView([30.57,114.30],12);
+L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{subdomains:['1','2','3','4']}).addTo(map);
+L.control.attribution({prefix:false}).addAttribution('© 高德地图 · 坐标来自高德 POI 检索').addTo(map);
+function mkIcon(cat,origin,far){
+  const col=origin?'#2563EB':(far?'#A9C9A4':CATS[cat].c);
+  const icon=origin?ICON("M3 11h18l-9-8-9 8Zm2 2v6h4v-4h4v4h4v-6"):ICON(CATS[cat].icon);
+  return L.divIcon({className:'pin'+(far?' far':''),html:`<div class="inner" style="background:${col}">${icon}</div>`,iconSize:[30,30],iconAnchor:[15,28],popupAnchor:[0,-26]});
+}
+const markers=[];
+/* 默认视野：fitBounds 非 far 落点；全 far 或无落点退 setView 武汉 */
+(function fitInit(){
+  const locals = NOTES.flatMap(n=>n.spots||[]).filter(s=>!s.far);
+  if(locals.length){
+    const bounds=L.latLngBounds(locals.map(s=>[s.lat,s.lng]).concat([[ORIGIN.lat,ORIGIN.lng]]));
+    map.fitBounds(bounds,{padding:[30,30],maxZoom:13});
+  }
+})();
+L.marker([ORIGIN.lat,ORIGIN.lng],{icon:mkIcon(null,true,false)}).addTo(map).bindPopup(`<div class="pop"><b>${ORIGIN.n}</b><div class="row">正式版将替换为你的固定出发地，并显示真实路线</div></div>`);
+NOTES.forEach(n=>n.spots.forEach(sp=>{
+  const m=L.marker([sp.lat,sp.lng],{icon:mkIcon(n.cat,false,!!sp.far)}).addTo(map);
+  const distTxt = sp.far
+    ? `异地所在城市（见 tip） · 距武汉约 ${sp.km.toFixed(0)} km（长途参考）`
+    : `距出发地 ≈ ${sp.km.toFixed(1)} km（直线）`;
+  m.bindPopup(`<div class="pop"><b>${sp.n}</b><div class="row">${sp.tip||''}</div><div class="row" style="color:#78716C">来自笔记：${n.title.slice(0,18)}</div><div class="d">${distTxt}</div>${n.sub?`<div class="sub">📍 ${n.sub}</div>`:''}</div>`);
+  markers.push({note:n,marker:m,lat:sp.lat,lng:sp.lng});
+}));
+
+/* ---------- 筛选条 ---------- */
+const chipDefs=[{k:"all",n:"全部",icon:"M3 12h7V3H3v18Zm11 9h7v-9h-7v9Zm0-13h7V3h-7v5Z"}];
+Object.keys(CATS).forEach(k=>{if(NOTES.some(n=>n.cat===k))chipDefs.push({k,...CATS[k]})});
+let cur="all";
+const chipBox=document.getElementById('chips');
+chipDefs.forEach(c=>{
+  const b=document.createElement('button');
+  b.className='chip'+(c.k==="all"?" on":"");b.setAttribute('role','tab');b.innerHTML=ICON(c.icon)+c.n;
+  b.onclick=()=>{cur=c.k;[...chipBox.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');render()};
+  chipBox.appendChild(b);
+});
+
+/* ---------- 卡片流 ---------- */
+const cardBox=document.getElementById('cards');
+function render(){
+  cardBox.innerHTML="";
+  const list=NOTES.filter(n=>cur==="all"||n.cat===cur);
+  if(!list.length){cardBox.innerHTML='<div style="padding:40px 0;text-align:center;color:var(--muted-fg)">该品类暂无收录</div>';return}
+  list.forEach((n,i)=>{
+    const c=CATS[n.cat]||CATS.other;
+    const el=document.createElement('article');
+    el.className='card';el.tabIndex=0;el.style.animationDelay=(i*55)+'ms';
+    el.setAttribute('aria-label',n.title);
+    const must=n.must&&n.must.length?`<div class="kv"><span class="k">必玩 / 亮点</span><ul>${n.must.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:"";
+    const trap=n.trap&&n.trap.length?`<div class="kv bad"><span class="k bad">避坑 / 注意</span><ul>${n.trap.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:"";
+    const kmInfo = kmBucket(n.km, !!(n.spots.find(s=>s.far)));
+    el.innerHTML=`
+      <div class="cover">
+        <img src="${n.cover||''}" alt="${(n.title||'').replace(/"/g,'')}（封面为小红书笔记首图）" loading="lazy" onerror="this.style.display='none'">
+        <span class="flag">${c.n}</span>
+        ${n.gallery?'<span class="gal">图集：景点在图里</span>':''}
+        ${n.km!==null?`<span class="km-f ${kmInfo.cls}">${kmInfo.label}</span>`:'<span class="km-f">坐标待核实</span>'}
+      </div>
+      <div class="body">
+        <div class="title">${n.title}</div>
+        <div class="meta">
+          <span class="mtag cat">${n.date}</span>
+          <span class="mtag stat">${HEART} ${n.collects.toLocaleString()}</span>
+          <span class="mtag stat">${CMT} ${n.comments}</span>
+          <span class="mtag">${IMGI} ${n.imgs} 图</span>
+          ${n.nationwide_note?'<span class="mtag" style="background:#E2EFDF;color:#14532D">🌐 异地</span>':''}
+        </div>
+        <div class="sum">${n.sum||''}</div>
+        ${must}${trap}
+        <div class="links">
+          <span class="mine ${n.mine[0]||'tbd'}">${n.mine[1]||'待验证'}</span>
+          <span class="grp">
+            ${n.entry?`<span class="entry">🎫 ${n.entry}</span>`:''}
+            <a class="lnk" href="${n.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${DPI}小红书原文</a>
+          </span>
+        </div>
+      </div>`;
+    const focus=()=>{
+      document.querySelectorAll('.card.hl').forEach(x=>x.classList.remove('hl'));el.classList.add('hl');
+      if(!n.spots.length){
+        const b=el.querySelector('.km-f');
+        b.textContent='原文没写地点，坐标待核实';b.classList.add('warn');
+        setTimeout(()=>{b.textContent='坐标待核实';b.classList.remove('warn')},2000);
+        return;
+      }
+      document.querySelector('.mapsec').scrollIntoView({behavior:'smooth'});
+      setTimeout(()=>{map.flyTo([n.spots[0].lat,n.spots[0].lng],14,{duration:.6});
+        const t=markers.find(m=>m.note===n);if(t)t.marker.openPopup()},350);
+    };
+    el.onclick=focus;
+    el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();focus()}};
+    cardBox.appendChild(el);
+  });
+}
+render();
+</script>
+</body>
+</html>
