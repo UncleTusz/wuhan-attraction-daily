@@ -179,6 +179,7 @@ const CATS={
   outskirt:{n:"近郊户外",c:"#15803D",icon:"M4 17h16M6 17a6 6 0 0 1 12 0M12 3v4M4 21h16"},
   secret:{n:"小众秘境",  c:"#7C3AED",icon:"M4 20h16M6 20V9l6-5 6 5v11M10 20v-6h4v6"},
   combo:{n:"综合合集",   c:"#DB2777",icon:"M4 6h7v7H4zM13 6h7v7h-7zM4 15h7v3H4zM13 15h7v3h-7z"},
+  show:{n:"演出展览",    c:"#BE123C",icon:"M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"},
   other:{n:"其他",       c:"#64748B",icon:"M12 3v4M12 17v4M3 12h4M17 12h4"}
 };
 const ORIGIN={n:"江汉路（示例出发地）",lat:30.5802,lng:114.2862};
@@ -497,6 +498,85 @@ function render(){
   });
 }
 render();
+</script>
+<style id="xhs-gate-style">
+.xg-lock{filter:blur(9px) saturate(.85);pointer-events:none;user-select:none}
+.xg-panel{max-width:560px;margin:18px auto;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:26px 22px;text-align:center}
+.xg-ico{font-size:30px;line-height:1}
+.xg-title{font-size:16.5px;font-weight:800;margin-top:9px}
+.xg-sub{font-size:12.5px;color:var(--muted-fg);margin-top:5px}
+.xg-row{margin-top:14px;display:flex;gap:8px;justify-content:center}
+.xg-row input{width:150px;padding:9px 12px;border:1px solid var(--border);border-radius:9px;font-size:14px;text-align:center;letter-spacing:3px;background:#fff;color:var(--fg);outline:none}
+.xg-row input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(62,142,90,.14)}
+.xg-row button{padding:9px 20px;border:none;border-radius:9px;background:var(--primary);color:#fff;font-size:13.5px;font-weight:700;cursor:pointer}
+.xg-row button:hover{filter:brightness(1.06)}
+.xg-err{min-height:17px;font-size:12px;color:#B91C1C;margin-top:9px;font-weight:600}
+.xg-shake{animation:xgshake .32s}
+@keyframes xgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+</style>
+<script>
+/* ---------- 内容闸门：免费看前 2 条，密码解锁（build 脚本注入，勿手改） ---------- */
+(function(){
+  var FREE=2, PASS="0723", KEY="xhsgate_ok";
+  var BOX=document.querySelector("#cards");
+  function unlocked(){try{return localStorage.getItem(KEY)==="1"}catch(e){return false}}
+  var panel=null;
+  function makePanel(){
+    var p=document.createElement("div");p.className="xg-panel";
+    p.innerHTML='<div class="xg-ico">🔒</div>'
+      +'<div class="xg-title">需要密码解锁精彩内容</div>'
+      +'<div class="xg-sub">密码请联系站长</div>'
+      +'<div class="xg-row"><input id="xg-pw" type="password" inputmode="numeric" placeholder="输入密码" autocomplete="off">'
+      +'<button id="xg-go" type="button">解锁</button></div>'
+      +'<div class="xg-err" id="xg-err"></div>';
+    return p;
+  }
+  function bindPanel(){
+    if(!panel||panel._bound) return;
+    panel._bound=1;
+    var btn=panel.querySelector("#xg-go"),pw=panel.querySelector("#xg-pw"),err=panel.querySelector("#xg-err");
+    function go(){
+      if(pw.value.trim()===PASS){
+        try{localStorage.setItem(KEY,"1")}catch(e){}
+        err.textContent="";pw.value="";
+        panel.innerHTML='<div class="xg-ico">✅</div><div class="xg-title">已解锁，慢慢看</div>';
+        setTimeout(function(){if(panel){panel.remove();panel=null}apply()},900);
+      }else{
+        err.textContent="密码不对，请联系站长获取";
+        pw.value="";
+        panel.classList.remove("xg-shake");void panel.offsetWidth;panel.classList.add("xg-shake");
+      }
+    }
+    btn.addEventListener("click",go);
+    pw.addEventListener("keydown",function(e){if(e.key==="Enter")go()});
+  }
+  function apply(){
+    if(!BOX) return;
+    var cards=[].filter.call(BOX.querySelectorAll("article.card"),function(el){return !el.classList.contains("xg-panel")});
+    if(unlocked()){
+      cards.forEach(function(c){c.classList.remove("xg-lock")});
+      if(panel){panel.remove();panel=null}
+      return;
+    }
+    var over=cards.length>FREE;
+    cards.forEach(function(c,i){
+      if(over&&i>=FREE) c.classList.add("xg-lock");
+      else c.classList.remove("xg-lock");
+    });
+    if(over){
+      if(!panel) panel=makePanel();
+      var anchor=cards[FREE-1];
+      if(panel.parentNode!==BOX||panel.previousSibling!==anchor) anchor.after(panel);
+      bindPanel();
+    }else if(panel){
+      panel.remove();panel=null;
+    }
+  }
+  apply();
+  if(BOX && window.MutationObserver){
+    new MutationObserver(function(){apply()}).observe(BOX,{childList:true});
+  }
+})();
 </script>
 </body>
 </html>
