@@ -517,7 +517,7 @@ render();
 <script>
 /* ---------- 内容闸门：免费看前 2 条，密码解锁（build 脚本注入，勿手改） ---------- */
 (function(){
-  var FREE=2, PASS="0723", KEY="xhsgate_ok";
+  var FREE=2, PASS=["0723", "0731"], KEY="xhsgate_ok";
   var BOX=document.querySelector("#cards");
   function unlocked(){try{return localStorage.getItem(KEY)==="1"}catch(e){return false}}
   var panel=null;
@@ -536,7 +536,8 @@ render();
     panel._bound=1;
     var btn=panel.querySelector("#xg-go"),pw=panel.querySelector("#xg-pw"),err=panel.querySelector("#xg-err");
     function go(){
-      if(pw.value.trim()===PASS){
+      var v=pw.value.trim();
+      if(v&&PASS.indexOf(v)>-1){
         try{localStorage.setItem(KEY,"1")}catch(e){}
         err.textContent="";pw.value="";
         panel.innerHTML='<div class="xg-ico">✅</div><div class="xg-title">已解锁，慢慢看</div>';
